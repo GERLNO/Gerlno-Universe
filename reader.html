@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0">
+<title>格爾諾文檔閱讀器（可放大）</title>
+<style>
+html {
+  font-size: 20px; /* 基礎字體直接變大 */
+}
+body {
+  background: #121212;
+  color: #e0e0e0;
+  margin: 0;
+  padding: 3rem 1.5rem;
+  line-height: 2.0;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+h1, h2, h3 {
+  color: #ffffff;
+  margin-top: 2rem;
+}
+p {
+  margin: 1rem 0;
+}
+</style>
+</head>
+<body>
+<div class="content">
+<h1>使用說明</h1>
+<p>1. 先去目錄頁複製你要打開的 .md 文檔網址</p>
+<p>2. 回到這個頁面，按 F12 打開控制台，或直接把內容貼這裡</p>
+<p>3. 字體預設已經放大，手機可雙指縮放，電腦可 Ctrl+滾輪放大</p>
+<p>4. 不想複雜操作，就把文檔內容直接複製貼到下面這個 div 裡：</p>
+
+<hr>
+
+<!-- 你要閱讀的內容，直接貼在下面這裡 ↓↓↓ -->
+<div id="doc" style="white-space: pre-wrap;">
+在這裡貼上你的文檔內容文字
+</div>
+
+</div>
+</body>
+</html>
