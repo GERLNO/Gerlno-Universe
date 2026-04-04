@@ -1,0 +1,7 @@
+theme: jekyll-theme-cayman
+baseurl: "/Gerlno-Universe"
+url: "https://gerlno.github.io"
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
