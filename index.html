@@ -402,14 +402,19 @@ a:hover{
     alert('已複製當前頁面鏈接');
   };
 
-  // 13. 歡迎彈窗（1秒弹出）
+  // 13. 歡迎彈窗（仅首次打开页面弹出，清缓存才会再弹）
+if (!localStorage.getItem('hasShownWelcome')) {
   setTimeout(() => {
     const wm = document.createElement('div');
     wm.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;z-index:99999';
     wm.innerHTML = `<div style="background:#111;padding:24px 32px;border-radius:12px;color:#fff;text-align:center;border:1px solid rgba(108,207,255,0.3)"><h3>歡迎來到格爾諾宇宙</h3><p>探索完整文檔體系</p><button style="margin-top:12px;padding:8px 16px;background:#6cf;color:#000;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s">確認</button></div>`;
     document.body.appendChild(wm);
-    wm.querySelector('button').onclick = () => wm.remove();
+    wm.querySelector('button').onclick = () => {
+      wm.remove();
+      localStorage.setItem('hasShownWelcome', '1'); // 标记已弹出
+    };
   }, 1000);
+}
 
   // 14. 標題高亮（锚点定位后）
   const hlStyle = document.createElement('style');
