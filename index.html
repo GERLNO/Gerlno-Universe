@@ -411,6 +411,101 @@ a:hover{
   hlStyle.innerHTML = 'h1:target,h2:target,h3:target{background:rgba(100,150,255,.1);padding:4px 8px;border-left:3px solid #6cf;transition:all 0.3s}';
   document.head.appendChild(hlStyle);
 })();
+
+
+// 14. 顶部居中可缩放+换色搜索框（适配格爾諾元理團子宇宙）
+(function() {
+  // 全局配置：默认配色/尺寸
+  let currentColor = '#6cf'; // 初始主色（页面原高亮蓝）
+  let baseWidth = '70%';
+  let baseMaxWidth = '800px';
+
+  // 1. 搜索框外层容器（顶部固定、毛玻璃、底部边框随主色变）
+  const searchWrap = document.createElement('div');
+  searchWrap.style.cssText = `position:fixed;top:0;left:0;width:100%;padding:18px 0;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);z-index:99999;text-align:center;box-sizing:border-box;border-bottom:2px solid ${currentColor};transition:border-color 0.3s;`;
+  document.body.appendChild(searchWrap);
+
+  // 2. 功能按钮容器（换色按钮组，居右）
+  const btnGroup = document.createElement('div');
+  btnGroup.style.cssText = 'position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;gap:8px;';
+  searchWrap.appendChild(btnGroup);
+
+  // 3. 一键换色按钮（蓝/紫/红/绿/黄，适配暗黑风）
+  const colors = ['#6cf', '#9c6cff', '#ff6c8c', '#6cff8c', '#ffd86c'];
+  colors.forEach(color => {
+    const colorBtn = document.createElement('button');
+    colorBtn.style.cssText = `width:24px;height:24px;border-radius:50%;border:2px solid #fff3;background:${color};cursor:pointer;transition:all 0.2s;`;
+    colorBtn.title = '切换搜索框配色';
+    // 点击换色+高亮当前选中色
+    colorBtn.onclick = () => {
+      currentColor = color;
+      searchInput.style.borderColor = currentColor;
+      searchInput.style.boxShadow = `0 0 15px ${currentColor}30`;
+      searchWrap.style.borderColor = currentColor;
+      // 重置所有换色按钮样式，高亮当前
+      document.querySelectorAll('#search-color-btn').forEach(btn => btn.style.transform = 'scale(1)');
+      colorBtn.style.transform = 'scale(1.2)';
+    };
+    colorBtn.id = 'search-color-btn';
+    btnGroup.appendChild(colorBtn);
+  });
+
+  // 4. 可缩放搜索输入框（核心）
+  const searchInput = document.createElement('input');
+  searchInput.placeholder = '🔍 搜索格爾諾宇宙｜目录/文件名称 | 鼠标拖拽右侧缩放';
+  searchInput.style.cssText = `width:${baseWidth};max-width:${baseMaxWidth};height:50px;padding:0 20px;font-size:16px;background:rgba(20,20,20,0.8);color:#eee;border:2px solid ${currentColor};border-radius:8px;outline:none;transition:all 0.3s;box-sizing:border-box;resize:horizontal;overflow:hidden;min-width:300px;max-width:90%;`;
+  // 聚焦动画（随当前主色发光）
+  searchInput.onfocus = () => {
+    searchInput.style.boxShadow = `0 0 15px ${currentColor}30`;
+    searchInput.style.background = 'rgba(10,10,10,0.9)';
+  };
+  searchInput.onblur = () => {
+    searchInput.style.boxShadow = 'none';
+    searchInput.style.background = 'rgba(20,20,20,0.8)';
+  };
+  searchWrap.appendChild(searchInput);
+
+  // 5. 核心搜索逻辑（实时筛选+父目录显示，适配全清单）
+  searchInput.oninput = (e) => {
+    const keyword = e.target.value.trim().toLowerCase();
+    const allNodes = document.querySelectorAll('h1, h2, h3, h4, a, p');
+    allNodes.forEach(node => {
+      const nodeText = node.innerText.trim().toLowerCase();
+      if (nodeText.includes(keyword)) {
+        node.style.display = node.tagName === 'A' ? 'inline' : 'block';
+        // 父节点自动显示，避免子节点匹配、上级目录隐藏
+        let parent = node.parentElement;
+        while (parent && parent.tagName !== 'BODY') {
+          parent.style.display = 'block';
+          parent = parent.parentElement;
+        }
+      } else {
+        node.style.display = 'none';
+      }
+    });
+    // 无输入时恢复所有节点显示
+    if (!keyword) {
+      allNodes.forEach(node => {
+        node.style.display = node.tagName === 'A' ? 'inline' : 'block';
+      });
+    }
+  };
+
+  // 6. 页面滚动适配（正文顶部间距，避免被遮挡）
+  const mainContent = document.createElement('style');
+  mainContent.innerHTML = 'body { padding-top: 86px !important; }';
+  document.head.appendChild(mainContent);
+
+  // 7. 缩放提示（鼠标悬停右侧显示提示，提升体验）
+  const resizeTip = document.createElement('div');
+  resizeTip.style.cssText = 'position:absolute;top:50%;right:calc(20px + 120px);transform:translateY(-50%);color:#888;font-size:12px;padding:4px 8px;background:rgba(0,0,0,0.7);border-radius:4px;pointer-events:none;opacity:0;transition:opacity 0.3s;';
+  resizeTip.innerText = '拖拽右侧缩放 | 点击色块换色';
+  searchWrap.appendChild(resizeTip);
+  // 鼠标悬停搜索框显示提示
+  searchInput.onmouseenter = () => resizeTip.style.opacity = '1';
+  searchInput.onmouseleave = () => resizeTip.style.opacity = '0';
+})();
+  
 </script>
   
  <canvas id="bg-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1; background:#060618;"></canvas>
