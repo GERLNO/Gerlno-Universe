@@ -389,10 +389,10 @@ a:hover{
   document.head.appendChild(bounceStyle);
 
 
-  // 11. 字體切換
+  // 11. 字體切換 —— 已修正位置
   const ftbtn = document.createElement('button');
   ftbtn.innerText = '字體';
-  ftbtn.style.cssText = 'position:fixed;top:200px;right:160px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
+  ftbtn.style.cssText = 'position:fixed;bottom:20px;right:110px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
   document.body.appendChild(ftbtn);
   const fonts = ['system-ui','monospace','serif'];
   let fi=0;
@@ -401,10 +401,10 @@ a:hover{
     document.body.style.fontFamily = fonts[fi];
   };
 
-  // 12. 複製鏈接
+  // 12. 複製鏈接 —— 已修正位置
   const clink = document.createElement('button');
   clink.innerText = '🔗';
-  clink.style.cssText = 'position:fixed;top:20px;right:210px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
+  clink.style.cssText = 'position:fixed;bottom:20px;right:160px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
   document.body.appendChild(clink);
   clink.onclick = () => {
     navigator.clipboard.writeText(location.href);
