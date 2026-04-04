@@ -282,4 +282,197 @@ a:hover{
 <a href="邊界層/07-邊際域/實踐學/格爾諾元理團子算命指南.md">格爾諾元理團子算命指南.md</a>
 
 </body>
+  <canvas id="bg-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1; background:#060618;"></canvas>
+
+<div style="position:fixed; bottom:22px; right:22px; z-index:999; display:flex; gap:10px;">
+  <button onclick="setMode(0)" style="padding:10px 16px; border:1px solid rgba(255,255,255,0.25); border-radius:9px; background:rgba(255,255,255,0.12); color:#fff; backdrop-filter:blur(6px); cursor:pointer; font-size:14px;">星空（舒適）</button>
+  <button onclick="setMode(1)" style="padding:10px 16px; border:1px solid rgba(255,255,255,0.25); border-radius:9px; background:rgba(255,255,255,0.12); color:#fff; backdrop-filter:blur(6px); cursor:pointer; font-size:14px;">星雲（原版）</button>
+</div>
+
+<script>
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+});
+
+let mode = 0;
+function setMode(n) { mode = n; }
+
+// ==============================
+// 星空模式：星星 + 流星 + 點擊噴射
+// ==============================
+let stars = [];
+let meteors = [];
+let clicks = [];
+
+for (let i = 0; i < 800; i++) {
+    stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.4 + 0.2,
+        speed: Math.random() * 0.15 + 0.03,
+        alpha: Math.random() * 0.5 + 0.4,
+        pulse: Math.random() * 0.007 + 0.002,
+        dir: Math.random() > 0.5 ? 1 : -1
+    });
+}
+
+function spawnMeteor() {
+    if (Math.random() < 0.025) {
+        meteors.push({
+            x: Math.random() * w,
+            y: 0,
+            len: Math.random() * 120 + 60,
+            speed: Math.random() * 6 + 3,
+            angle: Math.PI / 4 + (Math.random() - 0.5) * 0.2,
+            opacity: 1
+        });
+    }
+}
+
+canvas.addEventListener('click', (e) => {
+    for (let i = 0; i < 35; i++) {
+        clicks.push({
+            x: e.clientX,
+            y: e.clientY,
+            vx: (Math.random() - 0.5) * 7,
+            vy: (Math.random() - 0.5) * 7,
+            life: 1,
+            color: `hsl(${Math.random() * 40 + 200}, 90%, 70%)`
+        });
+    }
+});
+
+// ==============================
+// 星雲模式：流動 + 脈衝 + 點擊擴散
+// ==============================
+let nebulaTime = 0;
+let pulses = [];
+
+canvas.addEventListener('click', (e) => {
+    pulses.push({
+        x: e.clientX,
+        y: e.clientY,
+        r: 0,
+        maxR: Math.random() * 150 + 100,
+        alpha: 1
+    });
+});
+
+// ==============================
+// 主繪製循環
+// ==============================
+function draw() {
+    ctx.fillStyle = 'rgba(6,6,24,0.2)';
+    ctx.fillRect(0, 0, w, h);
+
+    if (mode === 0) {
+        drawStars();
+        drawMeteors();
+        drawClicks();
+    } else {
+        drawNebula();
+        drawPulses();
+    }
+
+    requestAnimationFrame(draw);
+}
+
+// ==============================
+// 星空：星星閃爍 + 流星
+// ==============================
+function drawStars() {
+    stars.forEach(s => {
+        s.alpha += s.pulse * s.dir;
+        if (s.alpha > 1 || s.alpha < 0.4) s.dir *= -1;
+        ctx.globalAlpha = s.alpha;
+        ctx.fillStyle = '#edf0ff';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        s.y += s.speed;
+        if (s.y > h) s.y = 0;
+    });
+    ctx.globalAlpha = 1;
+}
+
+function drawMeteors() {
+    spawnMeteor();
+    meteors.forEach((m, i) => {
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        let ex = m.x - Math.cos(m.angle) * m.len;
+        let ey = m.y + Math.sin(m.angle) * m.len;
+        ctx.lineTo(ex, ey);
+        let g = ctx.createLinearGradient(m.x, m.y, ex, ey);
+        g.addColorStop(0, 'rgba(180,200,255,' + m.opacity + ')');
+        g.addColorStop(1, 'rgba(100,120,200,0)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        m.x += Math.cos(m.angle) * m.speed;
+        m.y += Math.sin(m.angle) * m.speed;
+        m.opacity -= 0.008;
+        if (m.opacity <= 0 || m.y > h || m.x < 0) meteors.splice(i, 1);
+    });
+}
+
+function drawClicks() {
+    clicks.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.025;
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        if (p.life <= 0) clicks.splice(i, 1);
+    });
+    ctx.globalAlpha = 1;
+}
+
+// ==============================
+// 星雲：流動霧氣 + 點擊脈衝
+// ==============================
+function drawNebula() {
+    nebulaTime += 0.005;
+    let cx = w / 2 + Math.cos(nebulaTime * 0.6) * 70;
+    let cy = h / 2 + Math.sin(nebulaTime * 0.4) * 50;
+
+    let g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(w, h) / 1.4);
+    g.addColorStop(0, 'rgba(130,90,230,0.28)');
+    g.addColorStop(0.4, 'rgba(70,50,150,0.16)');
+    g.addColorStop(1, 'rgba(6,6,24,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+}
+
+function drawPulses() {
+    pulses.forEach((p, i) => {
+        p.r += 3;
+        p.alpha -= 0.015;
+        if (p.alpha <= 0 || p.r >= p.maxR) {
+            pulses.splice(i, 1);
+            return;
+        }
+        let g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0, 'rgba(180,140,255,' + p.alpha * 0.6 + ')');
+        g.addColorStop(1, 'rgba(120,80,220,0)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.stroke();
+    });
+}
+
+draw();
+</script>
 </html>
