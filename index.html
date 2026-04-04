@@ -293,11 +293,10 @@ a:hover{
 
 <script>
 (function() {
-
   // 1. 回到頂部
   const goTopBtn = document.createElement('button');
   goTopBtn.innerText = '↑';
-  goTopBtn.style.cssText = 'position:fixed;right:60px;bottom:20px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;display:none;z-index:999';
+  goTopBtn.style.cssText = 'position:fixed;right:60px;bottom:20px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,0.3);cursor:pointer;display:none;z-index:9999;transition:all 0.2s';
   document.body.appendChild(goTopBtn);
   window.addEventListener('scroll', () => {
     goTopBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
@@ -306,27 +305,26 @@ a:hover{
 
   // 2. 閱讀進度條
   const bar = document.createElement('div');
-  bar.style.cssText = 'position:fixed;top:0;left:0;width:0%;height:3px;background:#6cf;z-index:9999';
+  bar.style.cssText = 'position:fixed;top:0;left:0;width:0%;height:3px;background:#6cf;z-index:99999';
   document.body.appendChild(bar);
   window.addEventListener('scroll', () => {
     const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     bar.style.width = (window.scrollY / h * 100) + '%';
   });
 
-
-  // 3. 一鍵複製
+  // 3. 一鍵複製（代码/预格式化文本）
   document.querySelectorAll('code,pre').forEach(el => {
     const cbtn = document.createElement('button');
     cbtn.innerText = '複製';
-    cbtn.style.cssText = 'position:absolute;top:4px;right:4px;padding:4px 8px;background:#333;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer';
+    cbtn.style.cssText = 'position:absolute;top:4px;right:4px;padding:4px 8px;background:#333;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;z-index:10;transition:all 0.2s';
     el.style.position = 'relative';
     el.appendChild(cbtn);
     cbtn.onclick = () => {
-      navigator.clipboard.writeText(el.innerText.replace('複製','')).then(()=>{cbtn.innerText='已複製';setTimeout(()=>cbtn.innerText='複製',800);});
+      navigator.clipboard.writeText(el.innerText.replace('複製','')).then(()=>{cbtn.innerText='已複製';setTimeout(()=>cbtn.innerText='複製',800);}).catch(err=>{alert('複製失敗，請手動複製')});
     };
   });
 
-  // 4. 平滑滾動
+  // 4. 平滑滾動（锚点链接）
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
@@ -337,49 +335,43 @@ a:hover{
 
   // 5. 外部連結新分頁
   document.querySelectorAll('a').forEach(a => {
-    if (!a.href.includes(window.location.hostname)) a.target = '_blank';
+    if (a.href && !a.href.includes(window.location.hostname) && !a.href.startsWith('#')) a.target = '_blank';
   });
 
-
-  // 6. 列印
+  // 6. 列印功能
   const pbtn = document.createElement('button');
   pbtn.innerText = '🖨️';
-  pbtn.style.cssText = 'position:fixed;bottom:20px;right:10px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
+  pbtn.style.cssText = 'position:fixed;bottom:20px;right:10px;padding:8px 12px;background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;z-index:9999;transition:all 0.2s';
   document.body.appendChild(pbtn);
   pbtn.onclick = () => window.print();
 
-
-  // 7. 滾動淡入（保險）
+  // 7. 滾動淡入（内容元素）
   const fadeStyle = document.createElement('style');
   fadeStyle.innerHTML = '.fade-in{opacity:0;transform:translateY(20px);transition:0.6s}.fade-in.visible{opacity:1;transform:translateY(0)}';
   document.head.appendChild(fadeStyle);
-  const allElements = document.body.querySelectorAll('*:not(script):not(style):not(div):not(button):not(canvas)');
+  const allElements = document.body.querySelectorAll('h1, h2, h3, h4, a, p');
   if (allElements.length > 0) {
     allElements.forEach(el => el.classList.add('fade-in'));
     const ob = new IntersectionObserver(es => {
       es.forEach(e => e.target.classList.toggle('visible', e.isIntersecting));
-    });
+    }, {threshold:0.1});
     document.querySelectorAll('.fade-in').forEach(el => ob.observe(el));
   }
 
- 
-
-  // 8. 懸浮動畫
+  // 8. 懸浮動畫（按钮/链接通用）
   const hoverStyle = document.createElement('style');
-  hoverStyle.innerHTML = 'button,a{transition:all 0.2s}button:hover,a:hover{filter:brightness(1.2);transform:scale(1.03)}';
+  hoverStyle.innerHTML = 'button:hover,a:hover{filter:brightness(1.3);transform:scale(1.03);transition:all 0.2s}';
   document.head.appendChild(hoverStyle);
 
-
-  // 9. 視差
+  // 9. 背景視差效果
   window.addEventListener('scroll', () => {
     document.body.style.backgroundPositionY = -(window.scrollY * 0.3) + 'px';
   });
 
-
-  // 10. 滾動提示
+  // 10. 滾動提示（底部居中）
   const tip = document.createElement('div');
   tip.innerText = '↓ 滾動閱讀';
-  tip.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:#fff8;background:rgba(0,0,0,.3);padding:8px 16px;border-radius:20px;animation:bounce 1.5s infinite;z-index:999';
+  tip.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.8);background:rgba(0,0,0,.3);padding:8px 16px;border-radius:20px;animation:bounce 1.5s infinite;z-index:9999';
   document.body.appendChild(tip);
   window.addEventListener('scroll', () => {
     tip.style.display = window.scrollY > 200 ? 'none' : 'block';
@@ -388,11 +380,10 @@ a:hover{
   bounceStyle.innerHTML = '@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}';
   document.head.appendChild(bounceStyle);
 
-
-  // 11. 字體切換 —— 已修正位置
+  // 11. 字體切換（右下角按钮）
   const ftbtn = document.createElement('button');
   ftbtn.innerText = '字體';
-  ftbtn.style.cssText = 'position:fixed;bottom:20px;right:110px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
+  ftbtn.style.cssText = 'position:fixed;bottom:20px;right:110px;padding:8px 12px;background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;z-index:9999;transition:all 0.2s';
   document.body.appendChild(ftbtn);
   const fonts = ['system-ui','monospace','serif'];
   let fi=0;
@@ -401,31 +392,30 @@ a:hover{
     document.body.style.fontFamily = fonts[fi];
   };
 
-  // 12. 複製鏈接 —— 已修正位置
+  // 12. 複製當前頁面鏈接
   const clink = document.createElement('button');
   clink.innerText = '🔗';
-  clink.style.cssText = 'position:fixed;bottom:20px;right:160px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
+  clink.style.cssText = 'position:fixed;bottom:20px;right:160px;padding:8px 12px;background:rgba(0,0,0,.7);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;z-index:9999;transition:all 0.2s';
   document.body.appendChild(clink);
   clink.onclick = () => {
     navigator.clipboard.writeText(location.href);
     alert('已複製當前頁面鏈接');
   };
 
-  // 13. 歡迎彈窗
+  // 13. 歡迎彈窗（1秒弹出）
   setTimeout(() => {
     const wm = document.createElement('div');
-    wm.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;z-index:9999';
-    wm.innerHTML = `<div style="background:#111;padding:24px 32px;border-radius:12px;color:#fff;text-align:center"><h3>歡迎來到格爾諾宇宙</h3><p>探索完整文檔體系</p><button id="close-wm" style="margin-top:12px;padding:8px 16px;background:#6cf;color:#000;border:none;border-radius:8px;cursor:pointer">確認</button></div>`;
+    wm.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;z-index:99999';
+    wm.innerHTML = `<div style="background:#111;padding:24px 32px;border-radius:12px;color:#fff;text-align:center;border:1px solid rgba(108,207,255,0.3)"><h3>歡迎來到格爾諾宇宙</h3><p>探索完整文檔體系</p><button style="margin-top:12px;padding:8px 16px;background:#6cf;color:#000;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s">確認</button></div>`;
     document.body.appendChild(wm);
-    document.querySelector('#close-wm').onclick = () => wm.remove();
+    wm.querySelector('button').onclick = () => wm.remove();
   }, 1000);
 
-  // 14. 標題高亮
+  // 14. 標題高亮（锚点定位后）
   const hlStyle = document.createElement('style');
-  hlStyle.innerHTML = 'h1:target,h2:target,h3:target{background:rgba(100,150,255,.1);padding:4px 8px;border-left:3px solid #6cf}';
+  hlStyle.innerHTML = 'h1:target,h2:target,h3:target{background:rgba(100,150,255,.1);padding:4px 8px;border-left:3px solid #6cf;transition:all 0.3s}';
   document.head.appendChild(hlStyle);
-
-
+})();
 </script>
   
 </body>
