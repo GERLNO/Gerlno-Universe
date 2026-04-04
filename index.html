@@ -313,10 +313,10 @@ a:hover{
     bar.style.width = (window.scrollY / h * 100) + '%';
   });
 
-  // 3. 目錄
+  // 3. 目錄（保險：無標題就不建立）
   setTimeout(() => {
     const headings = document.querySelectorAll('h1,h2,h3');
-    if (!headings.length) return;
+    if (!headings || headings.length === 0) return;
     const toc = document.createElement('div');
     toc.style.cssText = 'position:fixed;left:20px;top:100px;max-width:220px;max-height:70vh;overflow-y:auto;background:rgba(0,0,0,.3);color:#fff;padding:12px;border-radius:8px;backdrop-filter:blur(6px);z-index:999';
     toc.innerHTML = '<div style="margin-bottom:8px;font-weight:bold">目錄</div>';
@@ -447,19 +447,20 @@ a:hover{
   document.head.appendChild(spinStyle);
   window.addEventListener('load', () => ld.remove());
 
-  // 14. 滾動淡入
+  // 14. 滾動淡入（保險）
   const fadeStyle = document.createElement('style');
   fadeStyle.innerHTML = '.fade-in{opacity:0;transform:translateY(20px);transition:0.6s}.fade-in.visible{opacity:1;transform:translateY(0)}';
   document.head.appendChild(fadeStyle);
-  document.body.querySelectorAll('*:not(script):not(style):not(div):not(button)').forEach(el => {
-    el.classList.add('fade-in');
-  });
-  const ob = new IntersectionObserver(es => {
-    es.forEach(e => e.target.classList.toggle('visible', e.isIntersecting));
-  });
-  document.querySelectorAll('.fade-in').forEach(el => ob.observe(el));
+  const allElements = document.body.querySelectorAll('*:not(script):not(style):not(div):not(button):not(canvas)');
+  if (allElements.length > 0) {
+    allElements.forEach(el => el.classList.add('fade-in'));
+    const ob = new IntersectionObserver(es => {
+      es.forEach(e => e.target.classList.toggle('visible', e.isIntersecting));
+    });
+    document.querySelectorAll('.fade-in').forEach(el => ob.observe(el));
+  }
 
-  // 15. 打字機
+  // 15. 打字機（保險：無 h1 就不執行）
   const h1 = document.querySelector('h1');
   if (h1) {
     const txt = h1.innerText;
@@ -581,15 +582,18 @@ a:hover{
     if (kw) window.find(kw);
   };
 
-  // 27. 折疊標題
+  // 27. 折疊標題（保險）
   const fold = document.createElement('button');
   fold.innerText = '📂';
   fold.style.cssText = 'position:fixed;top:20px;right:440px;padding:8px 12px;background:rgba(0,0,0,.3);color:#fff;border:1px solid #fff3;border-radius:10px;cursor:pointer;z-index:999';
   document.body.appendChild(fold);
   fold.onclick = () => {
-    document.querySelectorAll('h2,h3').forEach(h => {
-      h.style.display = h.style.display === 'none' ? 'block' : 'none';
-    });
+    const hs = document.querySelectorAll('h2,h3');
+    if (hs.length > 0) {
+      hs.forEach(h => {
+        h.style.display = h.style.display === 'none' ? 'block' : 'none';
+      });
+    }
   };
 
   // 28. 訪問次數
@@ -602,7 +606,6 @@ a:hover{
 
 })();
 </script>
-
   
 </body>
 
