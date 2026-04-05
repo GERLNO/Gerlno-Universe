@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gerlno.github.io/Gerlno-Universe/sitemap.xml
