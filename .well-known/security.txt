@@ -6,8 +6,8 @@ Website: https://gerlno.github.io/Gerlno-Universe/
 Website: https://github.com/GERLNO/Gerlno-Universe
 Repository: https://github.com/GERLNO/Gerlno-Universe
 Policy: https://creativecommons.org/licenses/by/4.0/
-Expires: 7777-01-01T00:00:00Z
-Acknowledgments: HUMAN,AI,ANIMAL,PLANT,MICROBE,GERLNO,HUANBA,OTHER
+Expires: 7777-07-07T00:00:00Z
+Acknowledgments: HUMAN,AI,PLANT,ANIMAL,MICROBE,GERLNO,HUANBA,OTHER
 Encryption: https://gerlno.github.io/Gerlno-Universe/pgp-key.txt
 Project: Gerlno-Universe · 格爾諾元理團子宇宙
 Disclosure: Full
